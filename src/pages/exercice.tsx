@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/supabaseClient";
+import { supabase } from "@/config/supabaseClient";
 import {
   Card,
   CardContent,
@@ -21,17 +21,13 @@ interface ModeRespiratoire {
 }
 export function Exercises() {
   const [exercises, setExercises] = useState<ModeRespiratoire[]>([]);
-  // const [selectedExercise, setSelectedExercise] =
-  //   useState<ModeRespiratoire | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [selectedExercise, setSelectedExercise] =
-    useState<ModeRespiratoire | null>(null);
 
   const navExercice = (exerciceData: ModeRespiratoire) => {
     navigate("/breathing_exercice", {
-      state: { exercise: exerciceData },
+      state: { mode: exerciceData },
     });
   };
 
@@ -53,9 +49,13 @@ export function Exercises() {
         if (data) {
           setExercises(data);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Erreur lors de la récupération des exercices :", err);
-        setError(err.message);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Erreur inattendue lors du chargement des exercices.");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -103,7 +103,7 @@ export function Exercises() {
           <Card
             key={exercise.id}
             className="border-2 border-emerald-100 hover:border-emerald-300 hover:shadow-xl transition-all cursor-pointer flex flex-col"
-            onClick={() => setSelectedExercise(exercise)}
+            onClick={() => navExercice(exercise)}
           >
             <CardHeader>
               <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-amber-400 rounded-full flex items-center justify-center mx-auto mb-4">

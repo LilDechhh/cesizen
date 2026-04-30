@@ -1,19 +1,54 @@
-import { Link } from "react-router-dom"; // Correction de l'import (react-router-dom)
-import { Brain, BookOpen, Wind, Heart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Brain, BookOpen, Wind, Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { supabase } from "@/supabaseClient";
+import { supabase } from "@/config/supabaseClient";
+import { useAuth } from "@/context/auth-context";
+import type { ModeRespiratoire } from "@/types";
 
 export function Home() {
-  const [session, setSession] = useState<any>(null);
+  const navigate = useNavigate();
 
   // On vérifie si l'utilisateur est connecté pour adapter les boutons
+  const { session } = useAuth();
+  const [exercises, setExercises] = useState<ModeRespiratoire[]>([]);
+  const [loadingExercises, setLoadingExercises] = useState(true);
+  const [exerciseError, setExerciseError] = useState("");
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const fetchExercises = async () => {
+      setLoadingExercises(true);
+      setExerciseError("");
+
+      try {
+        const { data, error } = await supabase
+          .from("mode_respiratoire")
+          .select("*")
+          .order("id", { ascending: true });
+
+        if (error) throw error;
+        setExercises(data || []);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setExerciseError(error.message);
+        } else {
+          setExerciseError("Erreur lors du chargement des exercices.");
+        }
+      } finally {
+        setLoadingExercises(false);
+      }
+    };
+
+    fetchExercises();
   }, []);
+
+  const formatModePattern = (mode: ModeRespiratoire) => {
+    if (mode.temps_apnee && mode.temps_apnee > 0) {
+      return `${mode.temps_inspiration}-${mode.temps_apnee}-${mode.temps_expiration}`;
+    }
+    return `${mode.temps_inspiration}-${mode.temps_expiration}`;
+  };
 
   const features = [
     {
@@ -40,10 +75,8 @@ export function Home() {
 
   return (
     <div>
-      {/* Hero Section */}
       <section className="bg-emerald-600 text-white">
         {" "}
-        {/* Utilisation de couleurs emerald pour matcher ton thème */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="max-w-3xl">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
@@ -131,29 +164,39 @@ export function Home() {
               </p>
 
               <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-emerald-700 font-bold">5-5</span>
+                {loadingExercises ? (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Chargement des exercices...
                   </div>
-                  <div>
-                    <p className="font-semibold mb-1">Cohérence Cardiaque</p>
-                    <p className="text-sm text-muted-foreground">
-                      5s inspiration, 5s expiration. L'équilibre parfait.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-amber-700 font-bold">4-6</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-1">Relaxation Profonde</p>
-                    <p className="text-sm text-muted-foreground">
-                      Idéal pour s'endormir ou calmer une anxiété forte.
-                    </p>
-                  </div>
-                </div>
+                ) : exerciseError ? (
+                  <p className="text-sm text-red-600">{exerciseError}</p>
+                ) : exercises.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Aucun exercice disponible pour le moment.</p>
+                ) : (
+                  exercises.map((exercise, index) => (
+                    <div key={exercise.id} className="flex items-start gap-3">
+                      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center flex-shrink-0 ${index % 2 === 0 ? "bg-emerald-100" : "bg-amber-100"}`}>
+                        <span className={`${index % 2 === 0 ? "text-emerald-700" : "text-amber-700"} font-bold`}>
+                          {formatModePattern(exercise)}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold mb-1">{exercise.libelle}</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {exercise.description || "Exercice guidé de respiration."}
+                        </p>
+                        <Button
+                          size="sm"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          onClick={() => navigate("/breathing_exercice", { state: { mode: exercise } })}
+                        >
+                          Lancer cet exercice
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               <Link to="/exercice">

@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+Ce guide permet de déployer l’application CesiZen en environnement local afin de tester l’ensemble des fonctionnalités.  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Prérequis  
 
-Currently, two official plugins are available:
+Avant toute installation, les outils suivants doivent être installés : 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Node.js 
 
-## React Compiler
+Un compte Supabase 
+ 
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Récupération du projet 
 
-## Expanding the ESLint configuration
+Cloner le dépôt Git  
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+git clone https://github.com/LilDechhh/cesizen.git 
+cd cesizen 
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Installer les dépendances  
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+npm install 
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Configurer les variables d’environnement  
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Créer un fichier .env.local à la racine du projet :  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+VITE_SUPABASE_URL=votre_url_supabase 
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+VITE_SUPABASE_ANON_KEY=votre_cle_supabase 
+
+Initialisation de la base de données  
+
+Copier le contenu du dossier “supabase/migrations/”et l'exécuter dans le "SQL Editor" de Supabase pour que les tables soient créées. 
+
+Lancement de l’application  
+
+Npm run dev 
+
+Lancements des tests  
+
+Exécuter la suite de tests : 
+
+ npm run test:dev 
+
+Résultat attendu : Tous les tests doivent être validés (status “passed”) 
+
+Problèmes fréquents  
+
+Erreur : variables d’environnement non reconnues 
+Vérifier le fichier .env.local et redémarrer le serveur 
+
+Erreur de connexion Supabase 
+Vérifier les clés API et l’état du projet Supabase 
+
+Port déjà utilisé 
+Modifier le port ou fermer l’application concernée 

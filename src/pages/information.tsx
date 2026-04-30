@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/supabaseClient";
+import { supabase } from "@/config/supabaseClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BadgeInfo } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-// Définition des types TypeScript
+// Définition des types
 interface Article {
   id: string;
   title: string;
@@ -19,24 +19,16 @@ interface Resource {
 }
 
 export default function Informations() {
-  // =========================================================================
-  // 1. ÉTATS (STATES)
-  // =========================================================================
-
+  // états
   const [articles, setArticles] = useState<Article[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // =========================================================================
-  // 2. CYCLE DE VIE (USE EFFECT)
-  // =========================================================================
 
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
-
-        // Récupération des articles d'information (Gérés via l'interface Admin)
+        // récupération des articles d'information
         const { data: articlesData, error: articlesError } = await supabase
           .from("info_articles")
           .select("*")
@@ -44,14 +36,14 @@ export default function Informations() {
 
         if (articlesError) throw articlesError;
 
-        // Récupération des ressources complémentaires (Listes à puces)
+        // récupération des ressources complémentaires
         const { data: resourcesData, error: resourcesError } = await supabase
           .from("info_resources")
           .select("*");
 
         if (resourcesError) throw resourcesError;
 
-        // Mise à jour des états
+        // mise à jour des états
         if (articlesData) setArticles(articlesData);
         if (resourcesData) setResources(resourcesData);
       } catch (error) {
@@ -63,10 +55,6 @@ export default function Informations() {
 
     fetchData();
   }, []);
-
-  // =========================================================================
-  // 3. RENDU (JSX)
-  // =========================================================================
 
   if (loading) {
     return (
