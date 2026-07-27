@@ -1,0 +1,35 @@
+name: Anomalie
+description: Signaler un bug
+title: "[BUG] "
+labels:
+  - bug
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Décris le problème rencontré.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Étapes de reproduction
+      description: Explique comment reproduire le problème.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Résultat attendu
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Priorité
+      options:
+        - Haute
+        - Moyenne
+        - Faible
+    validations:
+      required: true

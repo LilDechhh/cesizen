@@ -1,0 +1,25 @@
+name: Évolution
+description: Proposer une amélioration
+title: "[EVOLUTION] "
+labels:
+  - evolution
+body:
+  - type: textarea
+    attributes:
+      label: Besoin
+      description: Décris l’évolution souhaitée.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Valeur apportée
+      description: Explique l’intérêt pour l’utilisateur.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Critères d’acceptation
+    validations:
+      required: true
