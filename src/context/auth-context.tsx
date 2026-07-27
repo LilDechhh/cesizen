@@ -1,10 +1,15 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/config/supabaseClient";
 import type { UserProfile } from "@/types";
 
-
-// Type du contexte
 interface AuthContextType {
   session: Session | null;
   user: User | null;
@@ -14,14 +19,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
   const isMountedRef = useRef(true);
 
-  // Fonction pour récupérer le profil
   const fetchProfile = useCallback(async (currentUser: User) => {
     try {
       const { data, error } = await supabase
@@ -30,13 +39,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .eq("email", currentUser.email)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
+      // Déconnexion automatique si le compte est désactivé
+      if (!data.est_actif) {
+        await supabase.auth.signOut();
+
+        if (isMountedRef.current) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+        }
+
+        return;
+      }
 
       if (isMountedRef.current) {
         setProfile(data);
       }
     } catch (error: unknown) {
-      console.error("Erreur lors de la récupération du profil :", error);
+      console.error(
+        "Erreur lors de la récupération du profil :",
+        error
+      );
+
       if (isMountedRef.current) {
         setProfile(null);
       }
@@ -50,33 +78,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     isMountedRef.current = true;
 
-    // Initialisation
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current) {
+        return;
+      }
 
       setSession(session);
       setUser(session?.user ?? null);
+
       if (session?.user) {
         fetchProfile(session.user);
       } else {
+        setProfile(null);
         setIsLoading(false);
       }
     });
 
-    // Écouteur des changements d'état
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current) {
+        return;
+      }
 
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        // Utilisateur connecté
+        setIsLoading(true);
         fetchProfile(session.user);
       } else {
-        // Utilisateur déconnecté
         setProfile(null);
         setIsLoading(false);
       }
@@ -89,7 +120,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [fetchProfile]);
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, isLoading }}>
+    <AuthContext.Provider
+      value={{
+        session,
+        user,
+        profile,
+        isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -97,8 +135,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+
   if (context === undefined) {
-    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
+    throw new Error(
+      "useAuth doit être utilisé à l'intérieur d'un AuthProvider"
+    );
   }
+
   return context;
 };
