@@ -51,15 +51,19 @@ export const adminService = {
   // Récupération des statistiques et de l'historique d'un utilisateur
   async getUserStats(userId: number): Promise<UserStats> {
     const { data, count, error } = await supabase
-      .from("seance")
-      .select(`
+  .from("seance")
+  .select(
+    `
       *,
       mode_respiratoire (
         libelle
       )
-    `, { count: 'exact' })
-      .eq("utilisateur_id", userId)
-      .order("date_debut", { ascending: false });
+    `,
+    { count: "exact" }
+  )
+  .eq("utilisateur_id", userId)
+  .order("date_debut", { ascending: false })
+  .limit(10);
 
     if (error) throw error;
     return {
