@@ -38,44 +38,40 @@ export function ContentManager() {
     try {
       await adminService.deleteArticle(id);
       setArticles(articles.filter((a) => a.id !== id));
-    } catch (err: unknown) {
+    } catch  {
       alert("Erreur lors de la suppression");
     }
   };
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setCreateError("");
+  event.preventDefault();
+  setCreateError("");
 
-    if (!title.trim() || !content.trim()) {
-      setCreateError("Le titre et le contenu sont obligatoires.");
-      return;
-    }
+  if (!title.trim() || !content.trim()) {
+    setCreateError("Le titre et le contenu sont obligatoires.");
+    return;
+  }
 
-    setIsCreating(true);
+  setIsCreating(true);
 
-    try {
-      const newArticle = await adminService.createArticle({
-        title: title.trim(),
-        content: content.trim(),
-        tag: tag.trim() || null,
-      });
+  try {
+    const newArticle = await adminService.createArticle({
+      title: title.trim(),
+      content: content.trim(),
+      tag: tag.trim() || null,
+    });
 
-      setArticles((prev) => [newArticle, ...prev]);
-      setTitle("");
-      setContent("");
-      setTag("");
-      setShowCreateForm(false);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setCreateError(err.message);
-      } else {
-        setCreateError("Erreur lors de la création de l'article.");
-      }
-    } finally {
-      setIsCreating(false);
-    }
-  };
+    setArticles((prev) => [newArticle, ...prev]);
+    setTitle("");
+    setContent("");
+    setTag("");
+    setShowCreateForm(false);
+  } catch {
+    setCreateError("Erreur lors de la création de l'article.");
+  } finally {
+    setIsCreating(false);
+  }
+};
 
   if (loading) return <Loader2 className="animate-spin mx-auto" />;
 
