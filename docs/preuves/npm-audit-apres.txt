@@ -1,0 +1,87 @@
+# npm audit report
+
+brace-expansion  <=5.0.7
+Severity: high
+brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash - https://github.com/advisories/GHSA-mh99-v99m-4gvg
+fix available via `npm audit fix --force`
+Will install eslint@10.8.0, which is a breaking change
+node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion
+node_modules/brace-expansion
+node_modules/filelist/node_modules/brace-expansion
+  minimatch  2.0.0 - 10.0.2
+  Depends on vulnerable versions of brace-expansion
+  node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch
+  node_modules/filelist/node_modules/minimatch
+  node_modules/minimatch
+    @eslint/config-array  <=0.22.0
+    Depends on vulnerable versions of minimatch
+    node_modules/@eslint/config-array
+      eslint  0.12.0 - 2.0.0-rc.1 || 4.1.0 - 10.0.0-rc.2
+      Depends on vulnerable versions of @eslint/config-array
+      Depends on vulnerable versions of @eslint/eslintrc
+      Depends on vulnerable versions of minimatch
+      node_modules/eslint
+        @typescript-eslint/eslint-plugin  <=8.56.1-alpha.2
+        Depends on vulnerable versions of @typescript-eslint/type-utils
+        Depends on vulnerable versions of @typescript-eslint/utils
+        Depends on vulnerable versions of eslint
+        node_modules/@typescript-eslint/eslint-plugin
+          typescript-eslint  <=8.56.1-alpha.2
+          Depends on vulnerable versions of @typescript-eslint/eslint-plugin
+          Depends on vulnerable versions of @typescript-eslint/parser
+          Depends on vulnerable versions of @typescript-eslint/typescript-estree
+          Depends on vulnerable versions of @typescript-eslint/utils
+          Depends on vulnerable versions of eslint
+          node_modules/typescript-eslint
+        @typescript-eslint/parser  1.1.1-alpha.0 - 8.56.1-alpha.2
+        Depends on vulnerable versions of @typescript-eslint/typescript-estree
+        Depends on vulnerable versions of eslint
+        node_modules/@typescript-eslint/parser
+        @typescript-eslint/type-utils  5.62.1-alpha.0 - 8.56.1-alpha.2
+        Depends on vulnerable versions of @typescript-eslint/typescript-estree
+        Depends on vulnerable versions of @typescript-eslint/utils
+        Depends on vulnerable versions of eslint
+        node_modules/@typescript-eslint/type-utils
+        @typescript-eslint/utils  <=8.56.1-alpha.2
+        Depends on vulnerable versions of @typescript-eslint/typescript-estree
+        Depends on vulnerable versions of eslint
+        node_modules/@typescript-eslint/utils
+    @eslint/eslintrc  0.0.1 || >=0.1.1
+    Depends on vulnerable versions of minimatch
+    node_modules/@eslint/eslintrc
+    @typescript-eslint/typescript-estree  6.16.0 - 8.56.1-alpha.2
+    Depends on vulnerable versions of minimatch
+    node_modules/@typescript-eslint/typescript-estree
+    filelist  0.0.5 - 1.0.6
+    Depends on vulnerable versions of minimatch
+    node_modules/filelist
+      jake  10.6.1 - 10.9.4
+      Depends on vulnerable versions of filelist
+      node_modules/jake
+        ejs  3.1.2 - 4.0.1
+        Depends on vulnerable versions of jake
+        node_modules/ejs
+          @trickfilm400/rollup-plugin-off-main-thread  <=3.1.0-pre2
+          Depends on vulnerable versions of ejs
+          node_modules/@trickfilm400/rollup-plugin-off-main-thread
+            workbox-build  >=7.4.1
+            Depends on vulnerable versions of @trickfilm400/rollup-plugin-off-main-thread
+            node_modules/workbox-build
+
+react-router  7.12.0 - 8.2.0
+Severity: high
+React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response - https://github.com/advisories/GHSA-qwww-vcr4-c8h2
+fix available via `npm audit fix --force`
+Will install react-router-dom@7.11.0, which is a breaking change
+node_modules/react-router
+  react-router-dom  >=7.12.0-pre.0
+  Depends on vulnerable versions of react-router
+  node_modules/react-router-dom
+
+18 high severity vulnerabilities
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
